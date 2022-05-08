@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_frivia/providers/game_page_provider.dart';
+import 'package:flutter_frivia/view/providers/game_page_provider.dart';
 import 'package:provider/provider.dart';
 
 class GamePage extends StatelessWidget {
   double? _deviceHeight, _deviceWidth;
-
   GamePageProvider? _pageProvider;
+
+  GamePage({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -26,17 +27,23 @@ class GamePage extends StatelessWidget {
         // 여기에 context 가 있음으로써 _buildUI를 감싼 ChangeNotifierProvider 가 제공하는
         // provider 에 접근할 수 있다.
         _pageProvider = context.watch<GamePageProvider>();
-
-        return Scaffold(
-          body: SafeArea(
-            child: Container(
-              padding: EdgeInsets.symmetric(
-                  horizontal: _deviceHeight! *0.05
+        if (_pageProvider?.questions != null) {
+          return Scaffold(
+            body: SafeArea(
+              child: Container(
+                padding:
+                    EdgeInsets.symmetric(horizontal: _deviceHeight! * 0.05),
+                child: _gameUI(),
               ),
-              child: _gameUI(),
             ),
-          ),
-        );
+          );
+        } else {
+          return const Center(
+            child: CircularProgressIndicator(
+              color: Colors.white,
+            ),
+          );
+        }
       },
     );
   }
@@ -49,7 +56,9 @@ class GamePage extends StatelessWidget {
         Column(
           children: [
             _trueButton(),
-            SizedBox(height: _deviceHeight! * 0.01,),
+            SizedBox(
+              height: _deviceHeight! * 0.01,
+            ),
             _falseButton()
           ],
         )
@@ -58,19 +67,18 @@ class GamePage extends StatelessWidget {
   }
 
   Widget _questionText() {
-    return const Text(
-      "Test Question 1",
-      style: TextStyle(
-          color: Colors.white,
-          fontSize: 25,
-          fontWeight: FontWeight.w400
-      ),
+    return Text(
+      _pageProvider!.getCurrentQuestionText(),
+      style: const TextStyle(
+          color: Colors.white, fontSize: 25, fontWeight: FontWeight.w400),
     );
   }
 
   Widget _trueButton() {
     return MaterialButton(
-      onPressed: () {},
+      onPressed: () {
+        _pageProvider?.answerQuestion("True");
+      },
       color: Colors.green,
       minWidth: _deviceWidth! * 0.8,
       height: _deviceHeight! * 0.10,
@@ -86,7 +94,9 @@ class GamePage extends StatelessWidget {
 
   Widget _falseButton() {
     return MaterialButton(
-      onPressed: () {},
+      onPressed: () {
+        _pageProvider?.answerQuestion("False");
+      },
       color: Colors.red,
       minWidth: _deviceWidth! * 0.8,
       height: _deviceHeight! * 0.10,

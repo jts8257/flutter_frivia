@@ -1,5 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_frivia/pages/game_page.dart';
+import 'package:flutter_frivia/model/question_configuration_data.dart';
+import 'package:flutter_frivia/view/pages/entrance_page.dart';
+import 'package:get_it/get_it.dart';
+
+import 'resources/theme_colors.dart';
 
 void main() async {
   // WidgetsFlutterBinding.ensureInitialized();
@@ -12,18 +16,20 @@ class MyApp extends StatelessWidget {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-
+    configApp();
     return MaterialApp(
       title: 'Frivia',
       theme: ThemeData(
-        primarySwatch: Colors.blue,
-        scaffoldBackgroundColor: const Color.fromRGBO(31, 31, 31, 1.0),
-        fontFamily: 'ArchitectsDaughter'
-      ),
-      home: GamePage(),
+          primarySwatch: Colors.blue,
+          scaffoldBackgroundColor: ThemeColors.colorMainBackground,
+          fontFamily: 'ArchitectsDaughter'),
+      home: EntrancePage(),
     );
   }
+
+  void configApp() {
+    if (!GetIt.instance.isRegistered<QuestionConfigurationData>()) {
+      GetIt.instance.registerSingleton(QuestionConfigurationData());
+    }
+  }
 }
-
-
-
